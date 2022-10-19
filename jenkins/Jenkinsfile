@@ -19,7 +19,12 @@ pipeline {
 
         stage('Docker push to registry') {
             steps {
-                sh "docker push netodevel/netodevel-api"
+                script {
+                    withCredentials([string(credentialsId: 'docker_hub_pat',variable: 'dockerHubPat')]) {
+                        sh "docker login -u netodevel -p ${dockerHubPat}"
+                        sh "docker push netodevel/netodevel-api"
+                    }
+                }
             }
         }
 
