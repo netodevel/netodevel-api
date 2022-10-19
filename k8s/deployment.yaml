@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: netodevel-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: netodevel-api
+  template:
+    metadata:
+      labels:
+        app: netodevel-api
+    spec:
+      containers:
+      - image: netodevel/netodevel-api
+        name: netodevel-api
+        ports:
+          - containerPort: 8080

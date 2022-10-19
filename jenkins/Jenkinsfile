@@ -11,10 +11,22 @@ pipeline {
             }
         }
 
+        stage('Docker build') {
+            steps {
+                sh "docker build . -t netodevel/netodevel-api"
+            }
+        }
+
+        stage('Docker push to registry') {
+            steps {
+                sh "docker push netodevel/netodevel-api"
+            }
+        }
+
         stage('Apply Kubernetes files') {
             steps {
                 withKubeConfig([credentialsId: 'kind-cluster-config', serverUrl: 'https://127.0.0.1:35433']) {
-                  sh 'kubectl get nodes'
+                  sh 'kubectl apply -f k8s'
                 }
             }
         }
