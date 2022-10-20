@@ -1,7 +1,9 @@
 pipeline {
     agent any
 
-    def pomVersion = ""
+    enviroment {
+        POM_VERSION = ""
+    }
 
     stages {
         stage('Build') {
@@ -10,8 +12,8 @@ pipeline {
             }
             steps {
                 sh "mvn package -Dmaven.test.skip=true"
-                readMavenPom file: 'pom.xml'
-                pomVersion = pom.version
+                pom = readMavenPom file: 'pom.xml'
+                POM_VERSION = pom.version
                 stash 'source'
             }
         }
@@ -19,7 +21,7 @@ pipeline {
         stage('Docker build') {
             steps {
                 unstash 'source'
-                sh "docker build . -t netodevel/netodevel-api:${pomVersion}"
+                sh "docker build . -t netodevel/netodevel-api:${POM_VERSION}"
             }
         }
 
@@ -28,7 +30,7 @@ pipeline {
                 script {
                     withCredentials([string(credentialsId: 'docker_hub_pat',variable: 'dockerHubPat')]) {
                         sh "docker login -u netodevel -p ${dockerHubPat}"
-                        sh "docker push netodevel/netodevel-api:${pomVersion}"
+                        sh "docker push netodevel/netodevel-api:${POM_VERSION}"
                     }
                 }
             }
