@@ -8,11 +8,13 @@ pipeline {
             }
             steps {
                 sh "mvn package -Dmaven.test.skip=true"
+                stash 'source'
             }
         }
 
         stage('Docker build') {
             steps {
+                unstash 'source'
                 sh "docker build . -t netodevel/netodevel-api"
             }
         }
