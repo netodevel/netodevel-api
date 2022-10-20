@@ -13,7 +13,7 @@ spec:
         app: netodevel-api
     spec:
       containers:
-      - image: netodevel/netodevel-api
+      - image: netodevel/netodevel-api:latest
         name: netodevel-api
         ports:
           - containerPort: 8080

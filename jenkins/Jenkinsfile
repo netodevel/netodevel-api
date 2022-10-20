@@ -1,6 +1,8 @@
 pipeline {
     agent any
 
+    def pomVersion = ""
+
     stages {
         stage('Build') {
             agent {
@@ -8,6 +10,8 @@ pipeline {
             }
             steps {
                 sh "mvn package -Dmaven.test.skip=true"
+                readMavenPom file: 'pom.xml'
+                pomVersion = pom.version
                 stash 'source'
             }
         }
@@ -15,7 +19,7 @@ pipeline {
         stage('Docker build') {
             steps {
                 unstash 'source'
-                sh "docker build . -t netodevel/netodevel-api"
+                sh "docker build . -t netodevel/netodevel-api:${pomVersion}"
             }
         }
 
@@ -24,7 +28,7 @@ pipeline {
                 script {
                     withCredentials([string(credentialsId: 'docker_hub_pat',variable: 'dockerHubPat')]) {
                         sh "docker login -u netodevel -p ${dockerHubPat}"
-                        sh "docker push netodevel/netodevel-api"
+                        sh "docker push netodevel/netodevel-api:${pomVersion}"
                     }
                 }
             }
@@ -34,6 +38,7 @@ pipeline {
             steps {
                 withKubeConfig([credentialsId: 'kind-cluster-config', serverUrl: 'https://127.0.0.1:35433']) {
                   sh 'kubectl apply -f k8s'
+                  sh 'kubectl rollout restart deployment netodevel-api'
                 }
             }
         }
