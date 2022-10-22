@@ -12,7 +12,10 @@ pipeline {
             }
             steps {
                 sh "mvn package -Dmaven.test.skip=true"
-                POM_VERSION = sh script: 'mvn help:evaluate -Dexpression=project.version -q -DforceStdout', returnStdout: true
+                script {
+                    pom = readMavenPom file: 'pom.xml'
+                    POM_VERSION = pom.version
+                }
                 stash 'source'
             }
         }
