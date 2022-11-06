@@ -13,7 +13,7 @@ pipeline {
 
         stage('Apply Kubernetes files') {
             steps {
-                withKubeConfig([credentialsId: 'kind-cluster-config', serverUrl: 'https://127.0.0.1:51036']) {
+                withKubeConfig([credentialsId: 'kind-cluster-config', serverUrl: 'https://cicd-control-plane:51036']) {
                   sh 'kubectl get nodes'
                 }
             }

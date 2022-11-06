@@ -2,6 +2,8 @@ version: '3'
 services:
   jenkins:
     image: netodevel/jenkins-with-k8s
+    networks:
+      - kind
     ports:
       - '8084:8080'
     volumes:
@@ -10,3 +12,7 @@ services:
 volumes:
   jenkins_home:
     driver: local
+
+networks:
+  kind:
+    external: true
